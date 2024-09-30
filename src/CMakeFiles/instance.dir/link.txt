@@ -1,2 +1,0 @@
-/usr/bin/ar qc libinstance.a CMakeFiles/instance.dir/generic/instance.cpp.o
-/usr/bin/ranlib libinstance.a
