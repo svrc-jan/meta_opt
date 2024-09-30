@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/test.dir/test.cpp.o -o test  ../src/libinstance.a 
+/usr/bin/c++ CMakeFiles/test.dir/test.cpp.o -o test  ../src/liboptimizer.a ../src/libtsp.a ../src/libsolution.a ../src/libinstance.a 

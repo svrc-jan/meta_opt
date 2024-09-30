@@ -92,6 +92,9 @@ test_EXTERNAL_OBJECTS =
 
 apps/test: apps/CMakeFiles/test.dir/test.cpp.o
 apps/test: apps/CMakeFiles/test.dir/build.make
+apps/test: src/liboptimizer.a
+apps/test: src/libtsp.a
+apps/test: src/libsolution.a
 apps/test: src/libinstance.a
 apps/test: apps/CMakeFiles/test.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jsv/Projects/meta_opt/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable test"

@@ -144,6 +144,34 @@ instance/fast:
 	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/instance.dir/build.make src/CMakeFiles/instance.dir/build
 .PHONY : instance/fast
 
+# Convenience name for target.
+src/CMakeFiles/optimizer.dir/rule:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/optimizer.dir/rule
+.PHONY : src/CMakeFiles/optimizer.dir/rule
+
+# Convenience name for target.
+optimizer: src/CMakeFiles/optimizer.dir/rule
+.PHONY : optimizer
+
+# fast build rule for target.
+optimizer/fast:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/optimizer.dir/build.make src/CMakeFiles/optimizer.dir/build
+.PHONY : optimizer/fast
+
+# Convenience name for target.
+src/CMakeFiles/tsp.dir/rule:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/tsp.dir/rule
+.PHONY : src/CMakeFiles/tsp.dir/rule
+
+# Convenience name for target.
+tsp: src/CMakeFiles/tsp.dir/rule
+.PHONY : tsp
+
+# fast build rule for target.
+tsp/fast:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/tsp.dir/build.make src/CMakeFiles/tsp.dir/build
+.PHONY : tsp/fast
+
 generic/instance.o: generic/instance.cpp.o
 .PHONY : generic/instance.o
 
@@ -167,6 +195,30 @@ generic/instance.s: generic/instance.cpp.s
 generic/instance.cpp.s:
 	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/instance.dir/build.make src/CMakeFiles/instance.dir/generic/instance.cpp.s
 .PHONY : generic/instance.cpp.s
+
+generic/optimizer.o: generic/optimizer.cpp.o
+.PHONY : generic/optimizer.o
+
+# target to build an object file
+generic/optimizer.cpp.o:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/optimizer.dir/build.make src/CMakeFiles/optimizer.dir/generic/optimizer.cpp.o
+.PHONY : generic/optimizer.cpp.o
+
+generic/optimizer.i: generic/optimizer.cpp.i
+.PHONY : generic/optimizer.i
+
+# target to preprocess a source file
+generic/optimizer.cpp.i:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/optimizer.dir/build.make src/CMakeFiles/optimizer.dir/generic/optimizer.cpp.i
+.PHONY : generic/optimizer.cpp.i
+
+generic/optimizer.s: generic/optimizer.cpp.s
+.PHONY : generic/optimizer.s
+
+# target to generate assembly for a file
+generic/optimizer.cpp.s:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/optimizer.dir/build.make src/CMakeFiles/optimizer.dir/generic/optimizer.cpp.s
+.PHONY : generic/optimizer.cpp.s
 
 generic/solution.o: generic/solution.cpp.o
 .PHONY : generic/solution.o
@@ -192,6 +244,30 @@ generic/solution.cpp.s:
 	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/solution.dir/build.make src/CMakeFiles/solution.dir/generic/solution.cpp.s
 .PHONY : generic/solution.cpp.s
 
+specific/tsp.o: specific/tsp.cpp.o
+.PHONY : specific/tsp.o
+
+# target to build an object file
+specific/tsp.cpp.o:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/tsp.dir/build.make src/CMakeFiles/tsp.dir/specific/tsp.cpp.o
+.PHONY : specific/tsp.cpp.o
+
+specific/tsp.i: specific/tsp.cpp.i
+.PHONY : specific/tsp.i
+
+# target to preprocess a source file
+specific/tsp.cpp.i:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/tsp.dir/build.make src/CMakeFiles/tsp.dir/specific/tsp.cpp.i
+.PHONY : specific/tsp.cpp.i
+
+specific/tsp.s: specific/tsp.cpp.s
+.PHONY : specific/tsp.s
+
+# target to generate assembly for a file
+specific/tsp.cpp.s:
+	cd /home/jsv/Projects/meta_opt && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/tsp.dir/build.make src/CMakeFiles/tsp.dir/specific/tsp.cpp.s
+.PHONY : specific/tsp.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -201,13 +277,21 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... instance"
+	@echo "... optimizer"
 	@echo "... solution"
+	@echo "... tsp"
 	@echo "... generic/instance.o"
 	@echo "... generic/instance.i"
 	@echo "... generic/instance.s"
+	@echo "... generic/optimizer.o"
+	@echo "... generic/optimizer.i"
+	@echo "... generic/optimizer.s"
 	@echo "... generic/solution.o"
 	@echo "... generic/solution.i"
 	@echo "... generic/solution.s"
+	@echo "... specific/tsp.o"
+	@echo "... specific/tsp.i"
+	@echo "... specific/tsp.s"
 .PHONY : help
 
 

@@ -1,6 +1,6 @@
 /.vscode
-/CMakeCache.txt
-/CMakeFiles
-/Makefile
-/build
-/cmake_install.cmake
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+apps/CMakeFiles/progress.marks
