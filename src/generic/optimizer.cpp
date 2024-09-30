@@ -41,7 +41,7 @@ bool Optimizer::insert()
 		std::vector<uint> new_freq = freq;
 		new_freq[n]++;
 
-		std::vector<uint> new_perm(perm.size() + 1)
+		std::vector<uint> new_perm(perm.size() + 1);
 		
 
 	}
