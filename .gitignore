@@ -5,3 +5,5 @@ CMakeCache.txt
 Makefile
 *.a
 cmake_install.cmake
+src/cmake_install.cmake
+apps/cmake_install.cmake
