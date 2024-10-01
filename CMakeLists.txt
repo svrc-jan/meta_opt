@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.11-3.18)
 project(meta_opt)
 
 
-set(CMAKE_CURRENT_BINARY_DIR ${PROJECT_SOURCE_DIR}/build)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 
+include_directories(${PROJECT_SOURCE_DIR}/apps  ${PROJECT_SOURCE_DIR}/src)
 
 add_library(solution src/generic/solution.cpp)
 target_include_directories(solution PUBLIC ${PROJECT_SOURCE_DIR})
