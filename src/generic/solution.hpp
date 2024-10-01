@@ -14,8 +14,10 @@ public:
     bool feasible;
     fitness_t fitness;
 
-    Solution();
+    Solution(uint node_count=0);
     Solution(Solution& sol);
+    Solution(std::vector<uint>& perm, std::vector<uint> &freq, 
+        bool& feasible, fitness_t& fitness);
 
     bool empty() { return this->size() == 0; }
     uint size() { return this->permutation.size(); }

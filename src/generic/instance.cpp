@@ -45,13 +45,8 @@ Instance::Instance(const Instance& inst) :
 bool Instance::get_fitness(fitness_t& fitness, const std::vector<uint>& permutation,
 		const std::vector<uint>& frequency)
 {
-	fitness = this->get_lb_penalty(frequency) + this->get_ub_penalty(frequency) +
-		this->get_conditions_penalty(permutation, frequency);
-
-	bool is_feasible = fitness == 0;
-	fitness += this->get_actual_fitness(permutation, frequency);
-
-	return is_feasible;
+	fitness = this->get_actual_fitness(permutation, frequency);
+	return this->get_conditions_penalty(fitness, permutation, frequency);
 }
 
 fitness_t Instance::get_lb_penalty(const std::vector<uint>& frequency)
@@ -75,7 +70,17 @@ fitness_t Instance::get_ub_penalty(const std::vector<uint>& frequency)
 			count += (uint)std::max((int)frequency[i] - (int)this->ubs[i], 0);
 	}
 
-	return LB_PENALTY*count;
+	return UB_PENALTY*count;
+}
+
+bool Instance::is_lb_met(const std::vector<uint>& frequency)
+{
+	for (uint i = 0; i < this->node_cnt; i++) {
+
+		if (this->lbs[i] > frequency[i])
+			return false;
+	}
+	return true;
 }
 
 void Instance::print(std::ostream& os)
@@ -84,12 +89,13 @@ void Instance::print(std::ostream& os)
 	os << "node count: " << this->node_cnt  << ", ";
 	os << "lbs: [";
 	for (uint i = 0; i < this->lbs.size(); i++) {
-		os << this->lbs[i] << ( i != this->lbs.size() - 1 ? ", " : "]");
+		os << this->lbs[i] << ( i != this->lbs.size() - 1 ? ", " : "");
 	};
 	if (this->use_ubs) {
-		os << ", ubs [";
+		os << "], ubs [";
 		for (uint i = 0; i < this->lbs.size(); i++) {
-			os << (this->ubs[i] > 0 ? std::to_string(this->ubs[i]) : "-") << ( i != this->lbs.size() - 1 ? ", " : "]");
+			os << (this->ubs[i] > 0 ? std::to_string(this->ubs[i]) : "-") << ( i != this->lbs.size() - 1 ? ", " : "");
 		};
+		os << "]";
 	}
 }

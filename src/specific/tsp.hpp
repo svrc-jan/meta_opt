@@ -17,9 +17,10 @@ private:
 	std::string name;
 	std::vector<std::vector<uint>> distance_matrix;
 
-	fitness_t get_conditions_penalty(const std::vector<uint>& permutation,
+	bool get_conditions_penalty(fitness_t& fitness, const std::vector<uint>& permutation,
 		const std::vector<uint>& frequency);
 
 	fitness_t get_actual_fitness(const std::vector<uint>& permutation,
 		const std::vector<uint>& frequency);
+
 };

@@ -37,8 +37,10 @@ public:
 	fitness_t get_lb_penalty(const std::vector<uint>& frequency);
 	fitness_t get_ub_penalty(const std::vector<uint>& frequency);
 
-	virtual fitness_t get_conditions_penalty(const std::vector<uint>& permutation,
-		const std::vector<uint>& frequency) { return 0; }
+	bool is_lb_met(const std::vector<uint>& frequency);
+
+	virtual bool get_conditions_penalty(fitness_t& fitness, const std::vector<uint>& permutation,
+		const std::vector<uint>& frequency) { return true; }
 
 	virtual fitness_t get_actual_fitness(const std::vector<uint>& permutation,
 		const std::vector<uint>& frequency) { return 0; }

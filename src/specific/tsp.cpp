@@ -23,20 +23,24 @@ TSP_instance::TSP_instance(TSP_instance& inst) :
 	Instance(inst),	distance_matrix(inst.distance_matrix) {}
 
 
-fitness_t TSP_instance::get_conditions_penalty(const std::vector<uint>& permutation,
+bool TSP_instance::get_conditions_penalty(fitness_t& fitness, 
+	const std::vector<uint>& permutation,
 	const std::vector<uint>& frequency)
 {
-	return 0;
+	return true;
 }
 
-fitness_t TSP_instance::get_actual_fitness(const std::vector<uint>& permutation,
+fitness_t TSP_instance::get_actual_fitness(
+	const std::vector<uint>& permutation,
 	const std::vector<uint>& frequency)
 {
 	uint dist = 0;
 
 	uint perm_size = permutation.size();
-	for (uint i; i < perm_size; i++) {
-		dist += distance_matrix[permutation[i]][permutation[(i + 1) % perm_size]];
+
+	for (uint i = 0; i < perm_size; i++) {
+		uint d = distance_matrix[permutation[i]][permutation[(i + 1) % perm_size]]; 
+		dist += d;
 	}
 	
 	return dist;

@@ -12,7 +12,7 @@ int main(int, char**){
         {12, 0, 19, 3, 25, 6},
         {29, 19, 0, 21, 23, 28},
         {22, 3, 21, 0, 4, 5},
-        {13, 25, 23, 4, 0, 13},
+        {13, 25, 23, 4, 0, 16},
         {24, 6, 28, 5, 16, 0}
     };
 
@@ -21,8 +21,19 @@ int main(int, char**){
     inst.print(cout);
     cout << endl;
 
-    Optimizer opt(inst);
+    Optimizer opt(&inst);
 
     opt.get_curr_sol().print(cout);
     cout << endl;
+
+    while (true) {
+        if (!opt.swap())
+            break;
+        opt.get_curr_sol().print(cout);
+        cout << endl;
+    }
+    
+
+    // opt.get_curr_sol().print(cout);
+    // cout << endl;
 }
