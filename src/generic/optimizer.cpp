@@ -49,10 +49,11 @@ bool Optimizer::insert()
 
 	Solution best_sol = curr_sol;
 
-	uint perm_size = perm.size();
+	const uint perm_size = perm.size();
 
 	bool updated = false;
 
+#pragma omp parallel for default(none) shared(perm, freq, best_sol, updated)
 	for (uint node = 0; node < this->instance->node_cnt; node++) {
 		if (this->instance->use_ubs)
 			if (freq[node] >= this->instance->ubs[node] && this->instance->ubs[node] > 0)
@@ -74,10 +75,13 @@ bool Optimizer::insert()
 			bool new_feasible = this->instance->get_fitness(new_fitness, new_perm, new_freq) && (lb_pen == 0) ;
 			new_fitness += lb_pen;
 
-			if (new_fitness < best_sol.fitness) {
-				best_sol = Solution(new_perm, new_freq, new_feasible, new_fitness);
-				updated = true;
-			}
+#pragma opm critical
+			{
+				if (new_fitness < best_sol.fitness) {
+					best_sol = Solution(new_perm, new_freq, new_feasible, new_fitness);
+					updated = true;
+				}
+			}	
 
 			if (pos < perm_size)
 				new_perm[pos] = perm[pos];
@@ -97,7 +101,7 @@ bool Optimizer::remove()
 
 	Solution best_sol = this->curr_sol;
 
-	uint perm_size = perm.size();
+	const uint perm_size = perm.size();
 	bool updated = false;
 
 	// fitness_t lb_pen = this->instance->get_lb_penalty(new_freq);
@@ -109,6 +113,19 @@ bool Optimizer::remove()
 		std::vector<uint> new_freq = freq;
 		std::vector<uint> new_perm(perm_size - 1);
 
+		new_freq[perm[i]]--;
+		if (i > 0)
+			memcpy(&(new_perm[0]), &(perm[0]), sizeof(uint)*i);
+		if (i < perm_size - 1)
+			memcpy(&(new_perm[i]), &(perm[i+1]), sizeof(uint)*(perm_size - i - 1));
+
+		fitness_t new_fitness = 0;
+		bool new_feasible = this->instance->get_fitness(new_fitness, new_perm, new_freq);
+
+		if (new_fitness < best_sol.fitness) {
+			best_sol = Solution(new_perm, new_freq, new_feasible, new_fitness);
+			updated = true;
+		}
 	}
 
 	if (updated)
@@ -124,7 +141,7 @@ bool Optimizer::swap()
 
 	Solution best_sol = curr_sol;
 
-	uint perm_size = perm.size();
+	const uint perm_size = perm.size();
 	bool updated = false;
 
 	// fitness_t lb_pen = this->instance->get_lb_penalty(new_freq);

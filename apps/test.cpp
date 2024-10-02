@@ -7,7 +7,7 @@
 using namespace std;
 
 int main(int, char**){
-    vector<vector<uint>> dist_mtx = {
+    vector<vector<uint>> dist = {
         {0, 12, 29, 23, 13, 24}, 
         {12, 0, 19, 3, 25, 6},
         {29, 19, 0, 21, 23, 28},
@@ -16,7 +16,11 @@ int main(int, char**){
         {24, 6, 28, 5, 16, 0}
     };
 
-    TSP_instance inst("tsp", dist_mtx);
+    Matrix distance_matrix(dist);
+
+    // TSP_instance inst("tsp", distance_matrix);
+
+    TSP_instance inst("tsp", "../data/tsplib/a280.json");   
 
     inst.print(cout);
     cout << endl;

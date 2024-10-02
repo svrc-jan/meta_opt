@@ -7,7 +7,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 
-include_directories(${PROJECT_SOURCE_DIR}/apps  ${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/apps  ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/lib)
 
 add_library(solution src/generic/solution.cpp)
 target_include_directories(solution PUBLIC ${PROJECT_SOURCE_DIR})
