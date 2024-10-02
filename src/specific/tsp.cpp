@@ -1,16 +1,19 @@
 #include "tsp.hpp"
 
 TSP_instance::TSP_instance(const std::string& name, 
-	const Matrix<uint>& distance_matrix) :
-	Instance(name), distance_matrix(distance_matrix)
+	const std::vector<std::vector<uint>>& dist_mtx) :
+	Instance(name), dist_mtx(dist_mtx)
 {
-	this->node_cnt = distance_matrix.rows;
-	assert(distance_matrix.rows == distance_matrix.cols);
+	this->node_cnt = dist_mtx.size();
+	for (auto v : dist_mtx) {
+		assert(v.size() == this->node_cnt);
+	}
 
 	this->setup_bounds();
 }
 
-TSP_instance::TSP_instance(const std::string& name, const std::string& json_file) : Instance(name)
+TSP_instance::TSP_instance(const std::string& name, 
+	const std::string& json_file) : Instance(name)
 {
 	this->parse_json_file(json_file);
 	this->setup_bounds();
@@ -28,8 +31,16 @@ void TSP_instance::setup_bounds()
 	}
 }
 
+void TSP_instance::resize_dist_mtx()
+{
+	this->dist_mtx.clear();
+	
+	for (uint i = 0; i < this->node_cnt; i++)
+		this->dist_mtx.push_back(std::vector<uint>(this->node_cnt, 0));
+}
+
 TSP_instance::TSP_instance(TSP_instance& inst) : 
-	Instance(inst),	distance_matrix(inst.distance_matrix) {}
+	Instance(inst),	dist_mtx(inst.dist_mtx) {}
 
 
 bool TSP_instance::get_conditions_penalty(fitness_t& fitness, 
@@ -47,10 +58,8 @@ fitness_t TSP_instance::get_actual_fitness(
 
 	uint perm_size = permutation.size();
 
-	for (uint i = 0; i < perm_size; i++) {
-		uint d = distance_matrix.get(permutation[i], permutation[(i + 1) % perm_size]); 
-		dist += d;
-	}
+	for (uint i = 0; i < perm_size; i++)
+		dist += dist_mtx[permutation[i]][permutation[(i < perm_size - 1 ? i + 1 : 0)]];
 	
 	return dist;
 }
@@ -59,38 +68,33 @@ void TSP_instance::parse_json_file(const std::string& file_name)
 {
 	json tsp_json = get_json_file(file_name);
 	
-	assert(std::string(tsp_json["type"]) == "TSP");
+	assert(std::string(get_case_insensitive_json(tsp_json, "type")) == "TSP");
 
-	this->node_cnt = tsp_json["dimension"];
+	this->node_cnt = get_case_insensitive_json(tsp_json, "dimension");
 
-	this->distance_matrix.resize(this->node_cnt, this->node_cnt);
-
-	std::vector<double> coord_x;
-	std::vector<double> coord_y;
-
-	auto n_coord = tsp_json["node_coordinates"];
+	this->resize_dist_mtx();
 
 
+	std::string edge_weight_type = get_case_insensitive_json(tsp_json, "edge_weight_type");
 
-	bool is_x = true;
-	for (auto r : n_coord) {
-		for (auto x : r) {
-			double d = x;
-			if (is_x)
-				coord_x.push_back(d);
-			else
-				coord_y.push_back(d);
-			is_x = !is_x;
-		}
+	if (edge_weight_type == "EUC_2D") {
+		auto data_json = get_case_insensitive_json(tsp_json, "node_coordinates");
+		auto node_coordinates = get_json_mtx_data(data_json);
+		this->fill_dist_mtx_euc2d(node_coordinates);
 	}
+	else {
+		std::cerr << "incorrect edge type" << std::endl;
+		exit(200);
+	}
+}
 
 
+
+void TSP_instance::fill_dist_mtx_euc2d(const std::vector<std::vector<double>>& data)
+{
 	for (uint i = 0; i < this->node_cnt; i++) {
 		for (uint j = 0; j < this->node_cnt; j++) {
-
-			double dist = sqrt(pow(coord_x[i] - coord_x[j], 2) + pow(coord_x[i]- coord_x[j], 2));
-			this->distance_matrix.set(i, j, (uint)round(dist));
+			this->dist_mtx[i][j] = (uint)round(euc_dist(data[i], data[j]));
 		}
 	}
-
 }

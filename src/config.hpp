@@ -8,5 +8,5 @@
 #define fitness_t uint
 #define MAX_FITNESS __UINT32_MAX__
 
-#define LB_PENALTY (MAX_FITNESS / 256U)
-#define UB_PENALTY (MAX_FITNESS / 512U)
+#define LB_PENALTY (MAX_FITNESS >> 12)
+#define UB_PENALTY (MAX_FITNESS >> 13)

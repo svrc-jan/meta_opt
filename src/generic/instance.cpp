@@ -87,15 +87,10 @@ void Instance::print(std::ostream& os)
 {
 	os << "Instance '" << this->name << "', ";
 	os << "node count: " << this->node_cnt  << ", ";
-	os << "lbs: [";
-	for (uint i = 0; i < this->lbs.size(); i++) {
-		os << this->lbs[i] << ( i != this->lbs.size() - 1 ? ", " : "");
-	};
+	os << "lbs: ";
+	print_vec<>(os, this->lbs);
 	if (this->use_ubs) {
-		os << "], ubs [";
-		for (uint i = 0; i < this->lbs.size(); i++) {
-			os << (this->ubs[i] > 0 ? std::to_string(this->ubs[i]) : "-") << ( i != this->lbs.size() - 1 ? ", " : "");
-		};
-		os << "]";
+		os << ", ubs ";
+		print_vec<>(os, this->ubs);
 	}
 }

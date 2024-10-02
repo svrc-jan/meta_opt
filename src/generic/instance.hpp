@@ -5,7 +5,7 @@
 #include <numeric>
 #include <iostream>
 
-// #include "utils.hpp"
+#include "utils.hpp"
 #include "config.hpp"
 
 class Instance

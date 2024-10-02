@@ -6,11 +6,11 @@ Solution::Solution(uint node_count) :
 	feasible(false), 
 	fitness(MAX_FITNESS / 2) { }
 
-Solution::Solution(Solution& sol) :
-	permutation(sol.permutation),
-	frequency(sol.frequency),
-	feasible(sol.feasible),
-	fitness(sol.fitness) { }
+// Solution::Solution(Solution& sol) :
+// 	permutation(sol.permutation),
+// 	frequency(sol.frequency),
+// 	feasible(sol.feasible),
+// 	fitness(sol.fitness) { }
 
 
 Solution::Solution(std::vector<uint>& perm, std::vector<uint>& freq, 
@@ -23,12 +23,16 @@ Solution::Solution(std::vector<uint>& perm, std::vector<uint>& freq,
 
 void Solution::print(std::ostream& os)
 {
-	os << "Solution [";
+	os << "Solution ";
+	print_vec(os, this->permutation);
 
-	for (uint i = 0; i < this->size(); i++) {
-		os << this->permutation[i] << ( i != this->size() - 1 ? ", " : "");
-	};
-	os << "], fitness: " << this->fitness << ", " << (this->feasible ? "feasible" : "infeasible");
+#ifdef VEC_TRUNCATE_SIZE
+	if (this->permutation.size() > VEC_TRUNCATE_SIZE) {
+		os << ", size:" << this->permutation.size();
+	}
+#endif
+
+	os << ", fitness: " << this->fitness << ", " << (this->feasible ? "feasible" : "infeasible");
 }
 
 std::ostream& operator << (std::ostream& os, Solution& sol)

@@ -5,8 +5,8 @@ Optimizer::Optimizer(Instance* instance)
 {
 	this->instance = instance;
 
-	this->init_sol = this->get_naive_solution();
-	// this->init_sol = this->get_greedy_solution();
+	// this->init_sol = this->get_naive_solution();
+	this->init_sol = this->get_greedy_solution();
 	this->curr_sol = this->init_sol;
 }
 
@@ -33,10 +33,9 @@ Solution Optimizer::get_naive_solution()
 Solution Optimizer::get_greedy_solution()
 {
 	this->curr_sol = Solution(this->instance->node_cnt);
-	std::cout << "freq len" << this->curr_sol.frequency.size() <<  std::endl;
 	while (!this->instance->is_lb_met(this->curr_sol.frequency)) {
 		this->insert();
-		std::cout << this->curr_sol << std::endl;
+		// std::cout << this->curr_sol << std::endl;
 	}
 	
 	return this->curr_sol;
@@ -53,7 +52,7 @@ bool Optimizer::insert()
 
 	bool updated = false;
 
-#pragma omp parallel for default(none) shared(perm, freq, best_sol, updated)
+#pragma omp parallel for default(none) shared(perm, freq, best_sol, perm_size, updated)
 	for (uint node = 0; node < this->instance->node_cnt; node++) {
 		if (this->instance->use_ubs)
 			if (freq[node] >= this->instance->ubs[node] && this->instance->ubs[node] > 0)
@@ -65,7 +64,8 @@ bool Optimizer::insert()
 		fitness_t lb_pen = this->instance->get_lb_penalty(new_freq);
 
 		std::vector<uint> new_perm(perm_size + 1);
-		memcpy(&(new_perm[1]), &(perm[0]), sizeof(uint)*perm_size);
+		// memcpy(&(new_perm[1]), &(perm[0]), sizeof(uint)*perm_size);
+		std::copy(&perm[0], &perm[perm_size], &new_perm[1]);
 
 		for (uint pos = 0; pos < perm_size + 1; pos++) {
 
@@ -75,7 +75,7 @@ bool Optimizer::insert()
 			bool new_feasible = this->instance->get_fitness(new_fitness, new_perm, new_freq) && (lb_pen == 0) ;
 			new_fitness += lb_pen;
 
-#pragma opm critical
+#pragma omp critical
 			{
 				if (new_fitness < best_sol.fitness) {
 					best_sol = Solution(new_perm, new_freq, new_feasible, new_fitness);
@@ -106,6 +106,7 @@ bool Optimizer::remove()
 
 	// fitness_t lb_pen = this->instance->get_lb_penalty(new_freq);
 
+#pragma omp parallel for default(none) shared(perm, freq, best_sol, perm_size, updated)
 	for (uint i = 0; i < perm_size; i++) {
 		if (freq[perm[i]] <= this->instance->lbs[perm[i]]) {
 			continue;
@@ -115,16 +116,21 @@ bool Optimizer::remove()
 
 		new_freq[perm[i]]--;
 		if (i > 0)
-			memcpy(&(new_perm[0]), &(perm[0]), sizeof(uint)*i);
+			// memcpy(&(new_perm[0]), &(perm[0]), sizeof(uint)*i);
+			std::copy(&perm[0], &perm[i], &new_perm[0]);
 		if (i < perm_size - 1)
-			memcpy(&(new_perm[i]), &(perm[i+1]), sizeof(uint)*(perm_size - i - 1));
+			// memcpy(&(new_perm[i]), &(perm[i+1]), sizeof(uint)*(perm_size - i - 1));
+			std::copy(&perm[i+1], &perm[perm_size], &new_perm[i]);
 
 		fitness_t new_fitness = 0;
 		bool new_feasible = this->instance->get_fitness(new_fitness, new_perm, new_freq);
 
-		if (new_fitness < best_sol.fitness) {
-			best_sol = Solution(new_perm, new_freq, new_feasible, new_fitness);
-			updated = true;
+#pragma omp critical
+		{
+			if (new_fitness < best_sol.fitness) {
+				best_sol = Solution(new_perm, new_freq, new_feasible, new_fitness);
+				updated = true;
+			}
 		}
 	}
 
@@ -134,7 +140,79 @@ bool Optimizer::remove()
 	return updated;
 }
 
-bool Optimizer::swap()
+bool Optimizer::move(uint p, bool reverse)
+{
+	std::vector<uint> perm = this->curr_sol.permutation;
+	std::vector<uint> freq = this->curr_sol.frequency;
+
+	Solution best_sol = this->curr_sol;
+
+	const uint perm_size = perm.size();
+	bool updated = false;
+
+#pragma omp parallel for default(none) shared(perm, freq, best_sol, perm_size, updated)
+	for (uint i = 0; i < perm_size; i++) {
+		std::vector<uint> new_perm = perm;
+
+		for (uint j = i + 2; j < perm_size; j++) {
+			std::reverse_copy(&perm[i], &perm[j], &new_perm[i]);
+
+			fitness_t new_fitness = 0;
+			bool new_feasible = this->instance->get_fitness(new_fitness, new_perm, freq);
+
+#pragma omp critical
+			{
+				if (new_fitness < best_sol.fitness) {
+					best_sol = Solution(new_perm, freq, new_feasible, new_fitness);
+					updated = true;
+				}
+			}
+		}
+	}
+
+	if (updated)
+		this->curr_sol = best_sol;
+
+	return updated;
+}
+
+bool Optimizer::two_opt()
+{
+	std::vector<uint> perm = this->curr_sol.permutation;
+	std::vector<uint> freq = this->curr_sol.frequency;
+
+	Solution best_sol = this->curr_sol;
+
+	const uint perm_size = perm.size();
+	bool updated = false;
+
+#pragma omp parallel for default(none) shared(perm, freq, best_sol, perm_size, updated)
+	for (uint i = 0; i < perm_size; i++) {
+		std::vector<uint> new_perm = perm;
+
+		for (uint j = i + 2; j < perm_size; j++) {
+			std::reverse_copy(&perm[i], &perm[j], &new_perm[i]);
+
+			fitness_t new_fitness = 0;
+			bool new_feasible = this->instance->get_fitness(new_fitness, new_perm, freq);
+
+#pragma omp critical
+			{
+				if (new_fitness < best_sol.fitness) {
+					best_sol = Solution(new_perm, freq, new_feasible, new_fitness);
+					updated = true;
+				}
+			}
+		}
+	}
+
+	if (updated)
+		this->curr_sol = best_sol;
+
+	return updated;
+}
+
+bool Optimizer::exchange(uint p, uint q)
 {
 	std::vector<uint> perm = this->curr_sol.permutation;
 	std::vector<uint> freq = this->curr_sol.frequency;
@@ -148,6 +226,7 @@ bool Optimizer::swap()
 
 	for (uint i = 0; i < perm_size; i++) {
 		std::vector<uint> new_perm = perm;
+		
 		for (uint j = i + 1; i < perm_size; i++) {
 			new_perm[j] = perm[i];
 			new_perm[i] = perm[j];

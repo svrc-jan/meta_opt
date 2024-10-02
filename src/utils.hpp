@@ -11,6 +11,8 @@
 
 using json = nlohmann::json;
 
+#define VEC_TRUNCATE_SIZE 5
+
 inline bool file_exists(const std::string& name) {
     if (FILE *file = fopen(name.c_str(), "r")) {
         fclose(file);
@@ -33,89 +35,60 @@ inline json get_json_file(const std::string& file_name)
 	return config;
 }
 
-template <typename T>
-class Matrix
+inline std::vector<std::vector<double>> get_json_mtx_data(json data)
 {
-public:	
-	uint rows;
-	uint cols;
-
-	T* data = nullptr;
-
-	Matrix(uint rows=0, uint cols=0) : rows(rows), cols(cols) 
-	{
-		if (rows > 0 && cols > 0)
-			this->data = new T[rows*cols];
-	}
-
-	Matrix(const Matrix& mtx) : rows(mtx.rows), cols(mtx.cols) 
-	{
-		if (mtx.data != nullptr)
-			this->data = new T[this->rows*this->cols];
-			memcpy(this->data, mtx.data, sizeof(T)*rows*cols);
-	}
-
-	Matrix(std::vector<std::vector<T>> mtx) {
-		this->rows = mtx.size();
-		this->cols = (this->rows > 0) ? mtx[0].size() : 0;
-
-		if (rows > 0 && cols > 0) {
-			this->data = new T[this->rows*this->cols];
-			for (uint i = 0; i < this->rows; i++) {
-				assert(mtx[i].size() == this->cols);
-				for (uint j = 0; j < this->cols; j++) {
-					this->set(i, j, mtx[i][j]);
-				}
-			}
+	std::vector<std::vector<double>> mtx;
+	for (auto row : data) {
+		mtx.push_back(std::vector<double>());
+		for (auto el : row) {
+			mtx.back().push_back(el);
 		}
 	}
+	return mtx;
+}
 
-	~Matrix()
-	{
-		this->clear();
-	}
-
-	void resize(uint new_rows, uint new_cols)
-	{
-		T* new_data = new T[rows*cols];
-
-		if (this->data != nullptr) {
-			for (uint i = 0; i < std::min(new_rows, this->rows); i++) {
-				for (uint j = 0; j < std::min(new_cols, this->cols); j++) {
-					new_data[new_cols*i + j] = this->get(i, j);
-				}
-			}
-			delete[] this->data;
-		}
-
-		this->data = new_data;
-		this->rows = new_rows;
-		this->cols = new_cols;
-	}
-
-	void clear()
-	{
-		if (this->data != nullptr)
-			delete[] this->data;
-			this->data = nullptr;
-		this->rows = 0;
-		this->cols = 0;
-	}
-
-	T get(const uint row, const uint col) 
-	{ 
-		assert(row < this->rows && col < this->rows);
-		return this->data[this->idx(row, col)];
-	}
+inline double euc_dist(const std::vector<double>& a, const std::vector<double>& b)
+{
+	assert(a.size() == b.size());
 	
-	void set(const uint row, const uint col, const T& val) 
-	{
-		assert(row < this->rows && col < this->rows);
-		this->data[this->idx(row, col)] = val;
+	double sum = 0;
+	for (size_t i = 0; i < a.size(); i++) {
+		sum += pow(a[i] - b[i], 2);
 	}
 
-	inline uint idx(uint row, uint col) 
-	{
-		return this->cols*row + col;
+	return sqrt(sum);
+}
+
+template<typename T>
+inline void print_vec(std::ostream& os, const std::vector<T>& vec)
+{
+	os << "[";
+	for (size_t i = 0; i < vec.size(); i++) {
+		os << vec[i] << (i < vec.size() - 1 ? ", " : "");
+
+#ifdef VEC_TRUNCATE_SIZE
+		if (i >= VEC_TRUNCATE_SIZE) {
+			os << "...";
+			break;
+		}
+#endif
+
 	}
-};
+	os << "]";
+}
+
+inline json get_case_insensitive_json(json& in_json, const std::string& key_in)
+{
+	using namespace std;
+	string key = key_in;
+	if (in_json.contains(key)) {
+		return in_json[key];
+	}
+	std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+	if (in_json.contains(key)) {
+		return in_json[key];
+	}
+
+	cerr << "Incorrect JSON key " << key << endl;
+	exit(101);
+}

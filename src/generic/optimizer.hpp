@@ -26,6 +26,8 @@ public:
 	// local search
 	bool insert();
 	bool remove();
-	bool swap();
+	bool two_opt();
+	bool move(uint p, bool reverse);
+	bool exchange(uint p, uint q);
 
 };
