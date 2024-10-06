@@ -2,7 +2,7 @@
 
 TSP_instance::TSP_instance(const std::string& name, 
 	const std::vector<std::vector<uint>>& dist_mtx) :
-	Instance(name), dist_mtx(dist_mtx)
+	name(name), dist_mtx(dist_mtx)
 {
 	this->node_cnt = dist_mtx.size();
 	for (auto v : dist_mtx) {
@@ -13,7 +13,7 @@ TSP_instance::TSP_instance(const std::string& name,
 }
 
 TSP_instance::TSP_instance(const std::string& name, 
-	const std::string& json_file) : Instance(name)
+	const std::string& json_file) : name(name)
 {
 	this->parse_json_file(json_file);
 	this->setup_bounds();
@@ -38,10 +38,6 @@ void TSP_instance::resize_dist_mtx()
 	for (uint i = 0; i < this->node_cnt; i++)
 		this->dist_mtx.push_back(std::vector<uint>(this->node_cnt, 0));
 }
-
-TSP_instance::TSP_instance(TSP_instance& inst) : 
-	Instance(inst),	dist_mtx(inst.dist_mtx) {}
-
 
 bool TSP_instance::get_conditions_penalty(fitness_t& fitness, 
 	const std::vector<uint>& permutation,

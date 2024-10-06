@@ -14,8 +14,6 @@ public:
 	
 	TSP_instance(const std::string& name, const std::string& json_file);
 
-	TSP_instance(TSP_instance& inst);
-
 private:
 	std::string name;
 	std::vector<std::vector<uint>> dist_mtx;

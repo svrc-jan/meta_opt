@@ -24,6 +24,8 @@ public:
     bool empty() { return this->size() == 0; }
     uint size() { return this->permutation.size(); }
 
+    static bool verify_perm_freq(std::vector<uint> perm, std::vector<uint> freq);
+
     void print(std::ostream& os);
 
     friend std::ostream& operator << (std::ostream& os, Solution& sol);

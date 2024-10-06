@@ -1,3 +1,7 @@
+#ifndef __UTILS_HPP__
+#define __UTILS_HPP__
+
+#pragma once
 #pragma once
 
 #include <assert.h>
@@ -11,7 +15,7 @@
 
 using json = nlohmann::json;
 
-#define VEC_TRUNCATE_SIZE 5
+#define VEC_TRUNCATE_SIZE 10
 
 inline bool file_exists(const std::string& name) {
     if (FILE *file = fopen(name.c_str(), "r")) {
@@ -92,3 +96,5 @@ inline json get_case_insensitive_json(json& in_json, const std::string& key_in)
 	cerr << "Incorrect JSON key " << key << endl;
 	exit(101);
 }
+
+#endif

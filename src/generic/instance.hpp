@@ -31,13 +31,15 @@ public:
 
 	void print(std::ostream& os);
 
-	bool get_fitness(fitness_t& fitness, const std::vector<uint>& permutation,
-		const std::vector<uint>& frequency);
-
 	fitness_t get_lb_penalty(const std::vector<uint>& frequency);
 	fitness_t get_ub_penalty(const std::vector<uint>& frequency);
 
 	bool is_lb_met(const std::vector<uint>& frequency);
+	bool is_ub_met(const std::vector<uint>& frequency);
+
+
+	virtual bool get_fitness(fitness_t& fitness, const std::vector<uint>& permutation,
+		const std::vector<uint>& frequency);
 
 	virtual bool get_conditions_penalty(fitness_t& fitness, const std::vector<uint>& permutation,
 		const std::vector<uint>& frequency) { return true; }

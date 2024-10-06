@@ -21,6 +21,22 @@ Solution::Solution(std::vector<uint>& perm, std::vector<uint>& freq,
 	fitness(fitness) { }
 
 
+bool Solution::verify_perm_freq(std::vector<uint> perm, std::vector<uint> freq)
+{
+	std::vector<uint> count(freq.size(), 0);
+
+	for (auto n : perm) {
+		count[n]++;
+	}
+
+	for (uint i = 0; i < freq.size(); i++) {
+		if (count != freq) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void Solution::print(std::ostream& os)
 {
 	os << "Solution ";

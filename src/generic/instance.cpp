@@ -76,8 +76,19 @@ fitness_t Instance::get_ub_penalty(const std::vector<uint>& frequency)
 bool Instance::is_lb_met(const std::vector<uint>& frequency)
 {
 	for (uint i = 0; i < this->node_cnt; i++) {
-
 		if (this->lbs[i] > frequency[i])
+			return false;
+	}
+	return true;
+}
+
+bool Instance::is_ub_met(const std::vector<uint>& frequency)
+{
+	if (!this->use_ubs)
+		return true;
+	
+	for (uint i = 0; i < this->node_cnt; i++) {
+		if (this->lbs[i] < frequency[i] && this->ubs[i] > 0)
 			return false;
 	}
 	return true;
